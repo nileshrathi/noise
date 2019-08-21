@@ -3,6 +3,11 @@ package main
 import (
 	"bufio"
 	"flag"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+
 	"github.com/perlin-network/noise"
 	"github.com/perlin-network/noise/cipher/aead"
 	"github.com/perlin-network/noise/handshake/ecdh"
@@ -11,9 +16,6 @@ import (
 	"github.com/perlin-network/noise/protocol"
 	"github.com/perlin-network/noise/skademlia"
 	"github.com/pkg/errors"
-	"os"
-	"strconv"
-	"strings"
 )
 
 /** DEFINE MESSAGES **/
@@ -31,11 +33,13 @@ func (chatMessage) Read(reader payload.Reader) (noise.Message, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to read chat msg")
 	}
-
+	fmt.Println("IN THE READ FUNCTION")
 	return chatMessage{text: text}, nil
 }
 
 func (m chatMessage) Write() []byte {
+
+	fmt.Println("IN THE WRITEEEE FUNCTION")
 	return payload.NewWriter(nil).WriteString(m.text).Bytes()
 }
 
@@ -60,6 +64,7 @@ func setup(node *noise.Node) {
 			for {
 				msg := <-peer.Receive(opcodeChat)
 				log.Info().Msgf("[%s]: %s", protocol.PeerID(peer), msg.(chatMessage).text)
+
 			}
 		}()
 
@@ -82,6 +87,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
 	defer node.Kill()
 
 	p := protocol.New()
@@ -98,6 +104,9 @@ func main() {
 	if len(flag.Args()) > 0 {
 		for _, address := range flag.Args() {
 			peer, err := node.Dial(address)
+			fmt.Print("dialing peer --")
+			fmt.Println(peer)
+
 			if err != nil {
 				panic(err)
 			}

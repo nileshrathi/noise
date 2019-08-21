@@ -30,11 +30,11 @@ func DefaultParams() parameters {
 		Host:           "127.0.0.1",
 		Transport:      transport.NewTCP(),
 		Metadata:       map[string]interface{}{},
-		MaxMessageSize: 1048576,
+		MaxMessageSize: 104857600,
 
-		SendMessageTimeout:    3 * time.Second,
-		ReceiveMessageTimeout: 3 * time.Second,
+		SendMessageTimeout:    5 * time.Second,
+		ReceiveMessageTimeout: 5 * time.Second,
 
-		SendWorkerBusyTimeout: 3 * time.Second,
+		SendWorkerBusyTimeout: 5 * time.Second,
 	}
 }

@@ -36,7 +36,7 @@ func DefaultParams() parameters {
 		Port: 0
 		Transport:      transport.NewTCP(),
 		Metadata:       map[string]interface{}{},
-		MaxMessageSize: 1048576,
+		MaxMessageSize: 104857600,
 
 		SendMessageTimeout:    3 * time.Second,
 		ReceiveMessageTimeout: 3 * time.Second,

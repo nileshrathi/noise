@@ -3,6 +3,9 @@ package main
 import (
 	"crypto/rand"
 	"fmt"
+	"sync/atomic"
+	"time"
+
 	"github.com/perlin-network/noise"
 	"github.com/perlin-network/noise/cipher/aead"
 	"github.com/perlin-network/noise/handshake/ecdh"
@@ -11,8 +14,6 @@ import (
 	"github.com/perlin-network/noise/protocol"
 	"github.com/perlin-network/noise/skademlia"
 	"github.com/pkg/errors"
-	"sync/atomic"
-	"time"
 )
 
 var (
@@ -80,7 +81,7 @@ func main() {
 			aead.WaitUntilAuthenticated(peer)
 
 			for {
-				payload := make([]byte, 600)
+				payload := make([]byte, 1024*1000)
 				_, _ = rand.Read(payload)
 
 				atomic.AddUint64(&messagesSentPerSecond, 1)

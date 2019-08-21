@@ -190,6 +190,7 @@ func (p *Peer) spawnReceiveWorker() {
 		}
 
 		if size > p.node.maxMessageSize {
+			log.Info().Msgf("YAHA FATA")
 			p.onConnErrorCallbacks.RunCallbacks(p.node, errors.Errorf("exceeded max message size; got size %d", size))
 
 			p.DisconnectAsync()
@@ -292,6 +293,8 @@ func (p *Peer) SendMessage(message Message) error {
 // It returns an error should the message not be registered with Noise, or there are message that are
 // blocking the peers send worker.
 func (p *Peer) SendMessageAsync(message Message) <-chan error {
+//	log.Info().Msgf("ISS waale function tak pohocha %f", len(message))
+	
 	result := make(chan error, 1)
 
 	payload, err := p.EncodeMessage(message)
@@ -308,7 +311,7 @@ func (p *Peer) SendMessageAsync(message Message) <-chan error {
 		return result
 	case p.sendQueue <- cmd:
 	}
-
+	log.Info().Msgf("SEND ASYNC KHATTAM %f",len(payload))
 	return result
 }
 
