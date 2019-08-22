@@ -63,7 +63,7 @@ func setup(node *noise.Node) {
 		go func() {
 			for {
 				msg := <-peer.Receive(opcodeChat)
-				log.Info().Msgf("[%s]: %s", protocol.PeerID(peer), msg.(chatMessage).text)
+				//log.Info().Msgf("[%s]: %s", protocol.PeerID(peer), msg.(chatMessage).text)
 				log.Info().Msgf("MESSAGE RECEIVED %d", len(msg.(chatMessage).text))
 
 			}
