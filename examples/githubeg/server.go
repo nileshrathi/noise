@@ -29,6 +29,7 @@ type chatMessage struct {
 }
 
 func (chatMessage) Read(reader payload.Reader) (noise.Message, error) {
+	text, err := reader.ReadString()
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to read chat msg")
 	}
@@ -59,11 +60,11 @@ func setup(node *noise.Node) {
 			return nil
 		})
 
-	//	opcodeChatMessage := noise.RegisterMessage(noise.NextAvailableOpcode(), (*chatMessage)(nil))
+		go func() {
 			for {
 				msg := <-peer.Receive(opcodeChat)
-			//	log.Info().Msgf("[%s]: %s", protocol.PeerID(peer), msg.(chatMessage).text)
-			log.Info().Msgf("MESSAGE RECEIVED OF LENGTH %d" len(msg.(chatMessage).text))
+				log.Info().Msgf("[%s]: %s", protocol.PeerID(peer), msg.(chatMessage).text)
+				log.Info().Msgf("MESSAGE RECEIVED %d", len(msg.(chatMessage).text))
 
 			}
 		}()
