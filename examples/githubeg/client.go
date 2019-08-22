@@ -74,7 +74,7 @@ func setup(node *noise.Node) {
 					s := []byte("start")
 					payload := make([]byte, 1024*1024)
 					_, _ = rand.Read(payload)
-					payload = append(payload, s...)
+					payload = append(s, payload...)
 
 					fmt.Println("Broadcast Shuru")
 					skademlia.Broadcast(node, chatMessage{text: string(payload)})
