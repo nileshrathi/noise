@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/perlin-network/noise"
 	"github.com/perlin-network/noise/cipher/aead"
@@ -24,6 +25,9 @@ var (
 	_          noise.Message = (*chatMessage)(nil)
 )
 
+var requestno = 1
+var mapreq = make(map[int]time.Time)
+
 type chatMessage struct {
 	text string
 }
@@ -40,6 +44,10 @@ func (chatMessage) Read(reader payload.Reader) (noise.Message, error) {
 func (m chatMessage) Write() []byte {
 
 	fmt.Println("IN THE WRITEEEE FUNCTION")
+	if m.text == "start" {
+		mapreq[1] = time.Now()
+	}
+
 	return payload.NewWriter(nil).WriteString(m.text).Bytes()
 }
 
@@ -64,7 +72,10 @@ func setup(node *noise.Node) {
 			for {
 				msg := <-peer.Receive(opcodeChat)
 				//log.Info().Msgf("[%s]: %s", protocol.PeerID(peer), msg.(chatMessage).text)
-				log.Info().Msgf("MESSAGE RECEIVED %d", len(msg.(chatMessage).text))
+				msgstring := msg.(chatMessage).text
+				msgtype := msgstring[:5]
+
+				log.Info().Msgf("MESSAGE RECEIVED %d and extracted %s", len(msg.(chatMessage).text), msgtype)
 
 			}
 		}()

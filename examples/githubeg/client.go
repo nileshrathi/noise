@@ -2,12 +2,12 @@ package main
 
 import (
 	"bufio"
+	"crypto/rand"
 	"flag"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
-	"crypto/rand"
 
 	"github.com/perlin-network/noise"
 	"github.com/perlin-network/noise/cipher/aead"
@@ -29,8 +29,7 @@ type chatMessage struct {
 	text string
 }
 
-
-func myFunc(){
+func myFunc() {
 	fmt.Println("MY FUNCTION CALLED")
 }
 func (chatMessage) Read(reader payload.Reader) (noise.Message, error) {
@@ -40,7 +39,6 @@ func (chatMessage) Read(reader payload.Reader) (noise.Message, error) {
 	}
 	fmt.Println("IN THE READ FUNCTION")
 
-	
 	return chatMessage{text: text}, nil
 }
 
@@ -70,17 +68,19 @@ func setup(node *noise.Node) {
 		go func() {
 			for {
 				msg := <-peer.Receive(opcodeChat)
-			//	log.Info().Msgf("[%s]: %s", protocol.PeerID(peer), msg.(chatMessage).text)
-				if msg.(chatMessage).text=="start"{
+				//	log.Info().Msgf("[%s]: %s", protocol.PeerID(peer), msg.(chatMessage).text)
+				if msg.(chatMessage).text == "start" {
 					myFunc()
-					payload := make([]byte, 1025*1024)
+					s := []byte("start")
+					payload := make([]byte, 1024*1024)
+					payload = append(payload, s...)
 					_, _ = rand.Read(payload)
 
 					fmt.Println("Broadcast Shuru")
-					skademlia.BroadcastAsync(node, chatMessage{text: string(payload)})
+					skademlia.Broadcast(node, chatMessage{text: string(payload)})
+					fmt.Println("Broadcast khattam")
 				}
-					
-			
+
 			}
 		}()
 

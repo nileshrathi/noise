@@ -98,10 +98,12 @@ func (p *Peer) spawnSendWorker() {
 			wg.Done()
 			return
 		case cmd = <-p.sendQueue:
+			log.Info().Msgf("Waiting in Queue !!!")
 		}
+		log.Info().Msgf("Message from Queue received")
 
 		payload := cmd.payload
-
+		log.Info().Msgf("beforeMessageSentCallbacks")
 		pp, errs := p.beforeMessageSentCallbacks.RunCallbacks(payload, p.node)
 		if len(errs) > 0 {
 			if cmd.result != nil {
@@ -117,8 +119,9 @@ func (p *Peer) spawnSendWorker() {
 				close(cmd.result)
 			}
 		}
+		log.Info().Msgf("beforeMessageSentCallbacks over")
 		payload = pp.([]byte)
-
+		
 		size := len(payload)
 
 		// Prepend message length to packet.
@@ -126,9 +129,9 @@ func (p *Peer) spawnSendWorker() {
 		prepended := binary.PutUvarint(buf[:], uint64(size))
 
 		buf = append(buf[:prepended], payload[:]...)
-
+		log.Info().Msgf("Copying in connection buffer")
 		copied, err := io.Copy(p.conn, bytes.NewReader(buf))
-
+		log.Info().Msgf("Copy over")
 		if copied != int64(size+prepended) {
 			if cmd.result != nil {
 				cmd.result <- errors.Errorf("only written %d bytes when expected to write %d bytes to peer", copied, size+prepended)
@@ -144,7 +147,7 @@ func (p *Peer) spawnSendWorker() {
 			}
 			continue
 		}
-
+		log.Info().Msgf("afterMessageSentCallbacks")
 		if errs := p.afterMessageSentCallbacks.RunCallbacks(p.node); len(errs) > 0 {
 			if cmd.result != nil {
 				var err = errs[0]
@@ -160,11 +163,12 @@ func (p *Peer) spawnSendWorker() {
 			}
 			continue
 		}
-
+		log.Info().Msgf("afterMessageSentCallbacks over")
 		if cmd.result != nil {
 			cmd.result <- nil
 			close(cmd.result)
 		}
+		log.Info().Msgf("for loop closed")
 	}
 }
 
