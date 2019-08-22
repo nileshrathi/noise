@@ -72,7 +72,7 @@ func setup(node *noise.Node) {
 				if msg.(chatMessage).text == "start" {
 					myFunc()
 					s := []byte("start")
-					payload := make([]byte, 1024*1024)
+					payload := make([]byte, 1024*1024*7)
 					_, _ = rand.Read(payload)
 					payload = append(s, payload...)
 
