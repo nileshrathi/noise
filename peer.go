@@ -98,12 +98,12 @@ func (p *Peer) spawnSendWorker() {
 			wg.Done()
 			return
 		case cmd = <-p.sendQueue:
-			log.Info().Msgf("Waiting in Queue !!!")
+		//	log.Info().Msgf("Waiting in Queue !!!")
 		}
-		log.Info().Msgf("Message from Queue received")
+		//log.Info().Msgf("Message from Queue received")
 
 		payload := cmd.payload
-		log.Info().Msgf("beforeMessageSentCallbacks")
+	//	log.Info().Msgf("beforeMessageSentCallbacks")
 		pp, errs := p.beforeMessageSentCallbacks.RunCallbacks(payload, p.node)
 		if len(errs) > 0 {
 			if cmd.result != nil {
@@ -119,7 +119,7 @@ func (p *Peer) spawnSendWorker() {
 				close(cmd.result)
 			}
 		}
-		log.Info().Msgf("beforeMessageSentCallbacks over")
+	//	log.Info().Msgf("beforeMessageSentCallbacks over")
 		payload = pp.([]byte)
 		
 		size := len(payload)
@@ -129,9 +129,9 @@ func (p *Peer) spawnSendWorker() {
 		prepended := binary.PutUvarint(buf[:], uint64(size))
 
 		buf = append(buf[:prepended], payload[:]...)
-		log.Info().Msgf("Copying in connection buffer")
+	//	log.Info().Msgf("Copying in connection buffer")
 		copied, err := io.Copy(p.conn, bytes.NewReader(buf))
-		log.Info().Msgf("Copy over")
+	//	log.Info().Msgf("Copy over")
 		if copied != int64(size+prepended) {
 			if cmd.result != nil {
 				cmd.result <- errors.Errorf("only written %d bytes when expected to write %d bytes to peer", copied, size+prepended)
@@ -147,7 +147,7 @@ func (p *Peer) spawnSendWorker() {
 			}
 			continue
 		}
-		log.Info().Msgf("afterMessageSentCallbacks")
+	//	log.Info().Msgf("afterMessageSentCallbacks")
 		if errs := p.afterMessageSentCallbacks.RunCallbacks(p.node); len(errs) > 0 {
 			if cmd.result != nil {
 				var err = errs[0]
@@ -163,12 +163,12 @@ func (p *Peer) spawnSendWorker() {
 			}
 			continue
 		}
-		log.Info().Msgf("afterMessageSentCallbacks over")
+	//	log.Info().Msgf("afterMessageSentCallbacks over")
 		if cmd.result != nil {
 			cmd.result <- nil
 			close(cmd.result)
 		}
-		log.Info().Msgf("for loop closed")
+	//	log.Info().Msgf("for loop closed")
 	}
 }
 
@@ -293,8 +293,8 @@ func (p *Peer) SendMessage(message Message) error {
 // order to block, refer to `SendMessage(message Message) error`.
 //
 // It is guaranteed that all messages are sent in a linearized order.
-//
-// It returns an error should the message not be registered with Noise, or there are message that are
+	//	log.Info().Msgf("ISS waale function tak pohocha %f", len(message))
+
 // blocking the peers send worker.
 func (p *Peer) SendMessageAsync(message Message) <-chan error {
 //	log.Info().Msgf("ISS waale function tak pohocha %f", len(message))
@@ -311,7 +311,7 @@ func (p *Peer) SendMessageAsync(message Message) <-chan error {
 
 	select {
 	case <-time.After(p.node.sendWorkerBusyTimeout):
-		result <- errors.New("send message queue is full and not being processed")
+	log.Info().Msgf("SEND ASYNC KHATTAM %f", len(payload))
 		return result
 	case p.sendQueue <- cmd:
 	}

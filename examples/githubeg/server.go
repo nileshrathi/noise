@@ -74,15 +74,15 @@ func setup(node *noise.Node) {
 				//log.Info().Msgf("[%s]: %s", protocol.PeerID(peer), msg.(chatMessage).text)
 				msgstring := msg.(chatMessage).text
 				msgtype := msgstring[:5]
-				var timeelapsednano int64
-				var timeelapsedmili int64
+				//var timeelapsednano int64
+				//var timeelapsedmili int64
 				if msgtype == "start" {
 					mapreq[11] = time.Now()
-					timeelapsednano = mapreq[11].Sub(mapreq[1]).Nanoseconds()
-					timeelapsedmili = timeelapsednano / 1000000
+					//	timeelapsednano = mapreq[11].Sub(mapreq[1]).Nanoseconds()
+					//timeelapsedmili = timeelapsednano / 1000000
 				}
 
-				log.Info().Msgf("MESSAGE RECEIVED %d and extracted %s and time elapses %d", len(msg.(chatMessage).text), msgtype, timeelapsedmili)
+				log.Info().Msgf("MESSAGE RECEIVED %d and extracted %s and from %s", len(msg.(chatMessage).text), msgtype, protocol.PeerID(peer))
 
 			}
 		}()
