@@ -71,7 +71,7 @@ func setup(node *noise.Node) {
 		go func() {
 			for {
 				msg := <-peer.Receive(opcodeChat)
-				//log.Info().Msgf("[%s]: %s", protocol.PeerID(peer), msg.(chatMessage).text)
+				log.Info().Msgf("[%s]: %s", protocol.PeerID(peer), msg.(chatMessage).text)
 				msgstring := msg.(chatMessage).text
 				msgtype := msgstring[:5]
 				//var timeelapsednano int64

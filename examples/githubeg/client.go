@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"crypto/rand"
+	"encoding/hex"
 	"flag"
 	"fmt"
 	"os"
@@ -69,16 +70,21 @@ func setup(node *noise.Node) {
 			for {
 				msg := <-peer.Receive(opcodeChat)
 				//	log.Info().Msgf("[%s]: %s", protocol.PeerID(peer), msg.(chatMessage).text)
+				log.Info().Msgf(" message from [%s]: %s", (protocol.PeerID(peer)), msg.(chatMessage).text)
+				ss := hex.EncodeToString(protocol.PeerID(peer).PublicKey())
+				fmt.Println(ss)
 				if msg.(chatMessage).text == "start" {
 					myFunc()
-					s := []byte("start")
-					payload := make([]byte, 1024*1024*7)
+					s1 := []byte("start")
+					pubkeybyte := []byte(ss)
+					prepend := append(s1, pubkeybyte...)
+					payload := make([]byte, 1)
 					_, _ = rand.Read(payload)
-					payload = append(s, payload...)
+					payload = append(prepend, payload...)
 
-					fmt.Println("Broadcast Shuru")
+					//fmt.Println("Broadcast Shuru")
 					skademlia.Broadcast(node, chatMessage{text: string(payload)})
-					fmt.Println("Broadcast khattam")
+					//fmt.Println("Broadcast khattam")
 				}
 
 			}
@@ -90,6 +96,7 @@ func setup(node *noise.Node) {
 
 func main() {
 	hostFlag := flag.String("h", "127.0.0.1", "host to listen for peers on")
+	//hostFlag := flag.String("h", "10.192.14.98", "host to listen for peers on")
 	portFlag := flag.Uint("p", 3000, "port to listen for peers on")
 	flag.Parse()
 
