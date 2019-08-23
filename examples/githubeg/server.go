@@ -26,7 +26,9 @@ var (
 )
 
 var requestno = 1
-var mapreq = make(map[int]time.Time)
+var mapsend = make(map[int]time.Time)
+var maprecv = make(map[string]time.Time)
+var latest = 0
 
 type chatMessage struct {
 	text string
@@ -45,7 +47,8 @@ func (m chatMessage) Write() []byte {
 
 	fmt.Println("IN THE WRITEEEE FUNCTION")
 	if m.text == "start" {
-		mapreq[1] = time.Now()
+		mapsend[latest] = time.Now()
+		latest++
 	}
 
 	return payload.NewWriter(nil).WriteString(m.text).Bytes()
@@ -74,17 +77,17 @@ func setup(node *noise.Node) {
 				log.Info().Msgf("[%s]: %s", protocol.PeerID(peer), msg.(chatMessage).text)
 				msgstring := msg.(chatMessage).text
 				msgtype := msgstring[:5]
-				//var timeelapsednano int64
-				//var timeelapsedmili int64
+				var timeelapsednano int64
+				var timeelapsedmili int64
 				if msgtype == "start" {
 					pubkey := msgstring[5:69]
 					fmt.Println(pubkey)
-					mapreq[11] = time.Now()
-					//	timeelapsednano = mapreq[11].Sub(mapreq[1]).Nanoseconds()
-					//timeelapsedmili = timeelapsednano / 1000000
+					currTime := time.Now()
+					maprecv[pubkey] = currTime
+					timeelapsednano = currTime.Sub(mapsend[latest-1]).Nanoseconds()
+					timeelapsedmili = timeelapsednano / 1000000
+					log.Info().Msgf("MESSAGE RECEIVED OF LENGTH %d and and time is %d", len(msg.(chatMessage).text), timeelapsedmili)
 				}
-
-				log.Info().Msgf("MESSAGE RECEIVED %d and extracted %s and from %s", len(msg.(chatMessage).text), msgtype, protocol.PeerID(peer))
 
 			}
 		}()
