@@ -70,7 +70,7 @@ func setup(node *noise.Node) {
 			for {
 				msg := <-peer.Receive(opcodeChat)
 				//	log.Info().Msgf("[%s]: %s", protocol.PeerID(peer), msg.(chatMessage).text)
-				log.Info().Msgf(" message from [%s]: %s", (protocol.PeerID(peer)), msg.(chatMessage).text)
+				//log.Info().Msgf(" message from [%s]: %s", (protocol.PeerID(peer)), msg.(chatMessage).text)
 				ss := hex.EncodeToString(protocol.PeerID(peer).PublicKey())
 				fmt.Println(ss)
 				if msg.(chatMessage).text == "start" {
@@ -78,7 +78,7 @@ func setup(node *noise.Node) {
 					s1 := []byte("start")
 					pubkeybyte := []byte(ss)
 					prepend := append(s1, pubkeybyte...)
-					payload := make([]byte, 1)
+					payload := make([]byte, 1024*1024)
 					_, _ = rand.Read(payload)
 					payload = append(prepend, payload...)
 
