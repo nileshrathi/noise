@@ -77,6 +77,8 @@ func setup(node *noise.Node) {
 				//var timeelapsednano int64
 				//var timeelapsedmili int64
 				if msgtype == "start" {
+					pubkey := msgstring[5:69]
+					fmt.Println(pubkey)
 					mapreq[11] = time.Now()
 					//	timeelapsednano = mapreq[11].Sub(mapreq[1]).Nanoseconds()
 					//timeelapsedmili = timeelapsednano / 1000000
